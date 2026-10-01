@@ -3,6 +3,7 @@
 Practical assessment of Fundamentals of Programming COMP1005/5005
 
 ## Contents
+README.md - README file for practical assessment
 
 ## Dependencies
 matplotlib
