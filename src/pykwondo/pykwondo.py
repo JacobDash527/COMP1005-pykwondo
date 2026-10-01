@@ -9,10 +9,12 @@ class Competitor:
     def __init__(self, rank=None, pos=(1,1)):
         self.rank = rank or random.choice(RANK_NAMES)
         self.pos = pos
+    
+    def get_rank(self):
+        return self.rank
 
-
-    def draw(self, ax):
-        ax.scatter(self.pos[0], self.pos[1], color=self.rank)
+    def get_pos(self):
+        return self.pos
 
 class Comp:
     def __init__(self, clubs=None):

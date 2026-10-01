@@ -37,7 +37,8 @@ def draw():
         
         # Draw competitors
         for competitor in club.get_competitors():
-            competitor.draw(ax[0])
+            pos = competitor.get_pos()
+            ax[0].scatter(pos[0], pos[1], color=competitor.get_rank())
 
     # Arena event type labels
     for arena_i in comp.get_arenas():
