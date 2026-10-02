@@ -12,12 +12,9 @@ def init_background(arr):
         i = comp.get_clubs().index(club)
         arr[2+10*i:9+10*i, 1:16] = 0.1+0.1*i
 
-    # Initialise each arena (event area)
-    for arena_i in comp.get_arenas():
-        i = comp.get_arenas().index(arena_i)
-        for arena in arena_i:
-            j = arena_i.index(arena)
-            arr[2+20*i:19+20*i, 21+20*j:39+20*j] = 0.7
+    # Initialise event area
+    arr[2:39, 21:59] = 0.7
+
     return arr
 
 def draw():
@@ -38,14 +35,11 @@ def draw():
         # Draw competitors
         for competitor in club.get_competitors():
             pos = competitor.get_pos()
-            ax[0].scatter(pos[0], pos[1], color=competitor.get_rank())
+            ax[0].scatter(pos[0], pos[1]+5+10*i, 
+                          color=competitor.get_rank())
 
-    # Arena event type labels
-    for arena_i in comp.get_arenas():
-        i = comp.get_arenas().index(arena_i)
-        for arena in arena_i:
-            j = arena_i.index(arena)
-            ax[0].annotate(f"{arena.get_event()}", xy=(21+20*i,1+20*j))
+    # Arena event type label
+    ax[0].annotate(f"Event", xy=(21,1))
 
     plt.pause(2)
 
