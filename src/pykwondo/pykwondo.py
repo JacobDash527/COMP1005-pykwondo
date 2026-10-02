@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 RANK_NAMES = ['white', 'yellow', 'green', 'blue', 'black']
 CLUB_NAMES = ['Miyagi Do', 'Cobra Kai']
-QUALIFYING = ['strike_challenge', 'kata', 'sparring']
+QUALIFYING = ['strike_challenge', 'kata', 'board_breaking', 'sparring']
 
 """ Order of methods:
         Accessor
@@ -48,9 +48,17 @@ class Comp:
     def get_events(self):
         return self.events
 
-    def __create_schedule(self):
-        for club in self.clubs:
-            club.get_competitors()
+    def create_schedule(self):
+        competitor_list = self.__combine_competitors()
+        # Initialise each event
+        self.events.append(StrikeChallenge(competitor_list))
+        self.events.append(Kata(competitor_list))
+        self.events.append(BoardBreaking(competitor_list))
+    
+    # Combine all competitor lists
+    def __combine_competitors(self):
+        return [competitor for club in self.clubs for 
+                competitor in club.get_competitors()]
 
 class Arena:
     def __init__(self):
@@ -74,14 +82,17 @@ class Event:
         self.competitors = competitors
 
 class StrikeChallenge(Event):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, competitors):
+        super().__init__('strike_challenge', competitors)
 
 class Kata(Event):
-    pass
+    def __init__(self, competitors):
+        super().__init__('kata', competitors)
 
 class BoardBreaking(Event):
-    pass
+    def __init__(self, competitors):
+        super().__init__('board_breaking', competitors)
 
 class Sparring(Event):
-    pass
+    def __init__(self, competitors):
+        super().__init__('sparring', competitors)

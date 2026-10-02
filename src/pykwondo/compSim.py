@@ -48,4 +48,5 @@ fig, ax = plt.subplots(1,2, figsize=(19.2, 10.8))
 zeros_arr = np.zeros((40, 60))
 floor = init_background(zeros_arr)
 
+comp.create_schedule()
 draw()
