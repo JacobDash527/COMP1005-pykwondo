@@ -2,6 +2,16 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
+NAMES = ["Liam Carter", "Maya Patel", "Noah Kim", "Ava Rossi", 
+         "Ethan Walsh", "Zoe Nguyen", "Lucas Silva", "Chloe Murphy", 
+         "Oliver Tan", "Isla Brooks","Mason Ortiz", "Priya Shah", 
+         "Jack Dunn", "Sofia Marino", "Leo Hansen","Ruby Chen", 
+         "Henry Adams", "Aisha Khan", "Owen Reid", "Mia Ivanova",
+         "Daniel Okafor", "Ella Fraser", "Sam Costa", "Hana Sato", 
+         "Max Berg","Grace Lee", "Tom Novak", "Layla Haddad", 
+         "Finn O'Brien", "Nina Petrov","Caleb Moore", "Yuki Tanaka", 
+         "Ben Foster", "Amara Diallo", "Jake Wilson", "Elena Cruz", 
+         "Ravi Menon", "Tess Walker", "Omar Said", "Lily Evans",]
 RANK_NAMES = ['white', 'yellow', 'green', 'blue', 'black']
 CLUB_NAMES = ['Miyagi Do', 'Cobra Kai', 'Fighting Dragon', 'Eagle Fang']
 QUALIFYING = ['strike_challenge', 'kata', 'board_breaking', 'sparring']
@@ -11,26 +21,6 @@ QUALIFYING = ['strike_challenge', 'kata', 'board_breaking', 'sparring']
         Modifier
         Public (doing methods)
         Private (internal methods __"class_name")"""
-
-class Competitor:
-    def __init__(self, rank=None, pos=(1,1)):
-        self.rank = rank or random.choice(RANK_NAMES)
-        self.pos = pos
-
-        # Completed events
-        self.strike_challenge_complete = False
-        self.kata_complete = False
-        self.sparring = False
-    
-    # Return competitor rank
-    def get_rank(self):
-        return self.rank
-
-    def get_pos(self):
-        return self.pos
-
-    def update_pos(self, pos):
-        self.pos = pos
 
 class Comp:
     def __init__(self, clubs=None):
@@ -60,6 +50,34 @@ class Comp:
     def __combine_competitors(self):
         return [competitor for club in self.clubs for 
                 competitor in club.get_competitors()]
+
+class Competitor:
+    def __init__(self, name=None, rank=None, pos=(1,1)):
+        self.name = name or random.choice(NAMES)
+        self.rank = rank or random.choice(RANK_NAMES)
+        self.pos = pos
+        self.score = random.randint(1, 10)
+
+        # Completed events
+        self.strike_challenge_complete = False
+        self.kata_complete = False
+        self.sparring = False
+    
+    # Return competitor rank
+    def get_name(self):
+        return self.name
+
+    def get_rank(self):
+        return self.rank
+
+    def get_pos(self):
+        return self.pos
+
+    def get_score(self):
+        return self.score
+
+    def update_pos(self, pos):
+        self.pos = pos
 
 class Arena:
     def __init__(self):

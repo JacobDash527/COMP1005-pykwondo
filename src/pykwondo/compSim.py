@@ -44,7 +44,7 @@ def draw():
     axis.annotate(f"Event", xy=(21,1))
     
 # Team score graph
-    axis = ax["club_score"]
+    axis = ax["club_scores"]
     axis.set_title("Club scores!")
     axis.set_xlabel('Points')
     axis.set_ylabel('Club')
@@ -58,18 +58,42 @@ def draw():
                           [club.get_score() for club in clubs],
                           color=colors)
 
-    # Individual score graph
+# Individual score graph
+    axis = ax['individual_scores']
 
+    clubs = comp.get_clubs()
+    axis.set_ylim(-0.5, 3.5)
+    axis.set_yticks(range(len(clubs)),
+                    (club.get_name() for club in clubs))
+    for club in clubs:
+        for competitor in club.get_competitors():
+            # Competitor parameters
+            name, score, i = competitor.get_name(), competitor.get_score(), clubs.index(club)
+
+            axis.scatter(score, i, color=competitor.get_rank())
+            axis.annotate(f'{name}: {score}', xy=(score, i))
+
+    # Pause the plot
     plt.pause(2)
 
 comp = Comp()
 # Initialise figure and axis, mosaic subplot allows 1 plot on the left
 # and 2 plots on the right.
-fig, ax = plt.subplot_mosaic([["arena","club_score"],
-                             ["arena","individual_score"]], 
-                             figsize=(19.2, 10.8),
-                             width_ratios=[2,1],
-                             gridspec_kw={"hspace": 0.3, "wspace": 0.3})
+#fig, ax = plt.subplot_mosaic([["arena","club_scores","individual_scores"],
+#                              ["arena","bro","individual_scores"]],
+#                             figsize=(19.2, 10.8),
+#                             width_ratios=[5,2,2],
+#                             gridspec_kw={"hspace": 0.3, "wspace": 0.3})
+
+fig = plt.figure(figsize=(19.2, 10.8), layout="constrained")
+gs = fig.add_gridspec(2,3) # 2 rows 3 columns
+ax = {
+    "arena":                fig.add_subplot(gs[:, 0]), 
+    "club_scores":          fig.add_subplot(gs[0, 1]), 
+    "extra":                fig.add_subplot(gs[1, 1]),
+    "individual_scores":    fig.add_subplot(gs[:, 2])
+    }
+
 plt.rcParams.update({'axes.labelsize': 14, 'xtick.labelsize': 12,
                      'ytick.labelsize': 8})
 
