@@ -40,23 +40,24 @@ class Comp:
         return self.events
 
     def create_schedule(self):
-        competitor_list = self.__combine_competitors()
+        competitor_list = self.combine_competitors()
         # Initialise each event
         self.events.append(StrikeChallenge(competitor_list))
         self.events.append(Kata(competitor_list))
         self.events.append(BoardBreaking(competitor_list))
     
     # Combine all competitor lists
-    def __combine_competitors(self):
+    def combine_competitors(self):
         return [competitor for club in self.clubs for 
                 competitor in club.get_competitors()]
 
 class Competitor:
-    def __init__(self, name=None, rank=None, pos=(1,1)):
+    def __init__(self, name=None, rank=None, pos=(1,1), club_name=None):
         self.name = name or random.choice(NAMES)
         self.rank = rank or random.choice(RANK_NAMES)
         self.pos = pos
         self.score = random.randint(1, 10)
+        self.club_name = club_name
 
         # Completed events
         self.strike_challenge_complete = False
@@ -76,18 +77,17 @@ class Competitor:
     def get_score(self):
         return self.score
 
+    def get_club_name(self):
+        return self.club_name
+
     def update_pos(self, pos):
         self.pos = pos
-
-class Arena:
-    def __init__(self):
-        pass
 
 
 class Club:
     def __init__(self, name=None):
         self.name = name or random.choice(CLUB_NAMES)
-        self.competitors = [Competitor()]
+        self.competitors = [Competitor(club_name=self.name) for i in range(10)]
         self.score = random.randint(1,10)
 
     def get_name(self):
