@@ -1,6 +1,6 @@
 import random
 import numpy as np
-import matplotlib.pyplot as plt
+import params
 
 NAMES = ["Liam Carter", "Maya Patel", "Noah Kim", "Ava Rossi", 
          "Ethan Walsh", "Zoe Nguyen", "Lucas Silva", "Chloe Murphy", 
@@ -15,6 +15,11 @@ NAMES = ["Liam Carter", "Maya Patel", "Noah Kim", "Ava Rossi",
 RANK_NAMES = ['white', 'yellow', 'green', 'blue', 'black']
 CLUB_NAMES = ['Miyagi Do', 'Cobra Kai', 'Fighting Dragon', 'Eagle Fang']
 QUALIFYING = ['strike_challenge', 'kata', 'board_breaking', 'sparring']
+
+seed = params.random_seed
+if params.random_seed == None:
+    seed = random.randrange(2**32)
+print(f"Seed: {seed}")
 
 """ Order of methods:
         Accessor
