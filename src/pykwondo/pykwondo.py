@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 RANK_NAMES = ['white', 'yellow', 'green', 'blue', 'black']
-CLUB_NAMES = ['Miyagi Do', 'Cobra Kai']
+CLUB_NAMES = ['Miyagi Do', 'Cobra Kai', 'Fighting Dragon', 'Eagle Fang']
 QUALIFYING = ['strike_challenge', 'kata', 'board_breaking', 'sparring']
 
 """ Order of methods:
@@ -36,7 +36,8 @@ class Comp:
     def __init__(self, clubs=None):
         self.timestep = 0
         self.finals = False
-        self.clubs = clubs or [Club(), Club(), Club(), Club()]
+        self.clubs = clubs or [Club(CLUB_NAMES[0]), Club(CLUB_NAMES[1]),
+                               Club(CLUB_NAMES[2]), Club(CLUB_NAMES[3])]
         self.events = []
 
     def get_timestep(self):
@@ -69,12 +70,16 @@ class Club:
     def __init__(self, name=None):
         self.name = name or random.choice(CLUB_NAMES)
         self.competitors = [Competitor()]
+        self.score = random.randint(1,10)
 
     def get_name(self):
         return self.name
 
     def get_competitors(self):
         return self.competitors
+    
+    def get_score(self):
+        return self.score
 
 class Event:
     def __init__(self, event_type, competitors):
