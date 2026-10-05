@@ -4,6 +4,8 @@
 from pykwondo import *
 import matplotlib.pyplot as plt
 import params
+from datetime import datetime
+from pathlib import Path
 
 def init_background(arr):
     arr[:] = 1
@@ -84,6 +86,43 @@ def draw():
 
     # Pause the plot
     plt.pause(5)
+
+def input_validation(prompt, type=None, min=None, max=None):
+    valid = False
+    while not valid:
+        match type:
+            case None:
+                try:
+                    value = int(input(prompt))
+                    if not min <= value <= max:
+                        raise ValueError(f"must be between {min} and "
+                                         f"{max}")
+                    valid = True
+                except ValueError as error:
+                    print(f"Invalid input: {error}")
+    return value
+                
+save_dir = None
+# Create a save directory with the current date and time 
+# Format: YYYY-MM-DD_HH-MM-SS
+if params.save_file is None:
+    saves = sorted(save.name for save in Path("saves").iterdir() 
+                   if save.is_dir())
+    for save in saves:
+        print(f"{[saves.index(save)+1]}: {save}")
+
+    chosen_save = input_validation(f"Enter the number corresponding to "
+                                   "the desired save file (type 0 to "
+                                   "create new file): ", min=0, 
+                                   max=len(saves))
+    if chosen_save == 0:
+        save_dir = (Path("saves") / 
+                    datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+        save_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Created save file: {save_dir}")
+    else:
+        save_dir = saves[chosen_save-1]
+        print(f"Loaded save file: {save_dir}")
 
 comp = Comp()
 comp.create_schedule()

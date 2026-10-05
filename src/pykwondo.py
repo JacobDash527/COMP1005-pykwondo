@@ -16,6 +16,7 @@ RANK_NAMES = ['white', 'yellow', 'green', 'blue', 'black']
 CLUB_NAMES = ['Miyagi Do', 'Cobra Kai', 'Fighting Dragon', 'Eagle Fang']
 QUALIFYING = ['strike_challenge', 'kata', 'board_breaking', 'sparring']
 
+# Import seed from params file, if None exists generate one
 seed = params.random_seed
 if params.random_seed == None:
     seed = random.randrange(2**32)
@@ -27,13 +28,14 @@ print(f"Seed: {seed}")
         Public (doing methods)
         Private (internal methods __"class_name")"""
 
+
 class Comp:
-    def __init__(self, clubs=None):
+    def __init__(self, clubs=None, save_dir=None):
         self.timestep = 0
         self.finals = False
-        self.clubs = clubs or [Club(CLUB_NAMES[0]), Club(CLUB_NAMES[1]),
-                               Club(CLUB_NAMES[2]), Club(CLUB_NAMES[3])]
+        self.clubs = clubs or [Club(name) for name in CLUB_NAMES]
         self.events = []
+        self.save_dir = save_dir
 
     def get_timestep(self):
         return self.timestep
