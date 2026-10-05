@@ -3,6 +3,7 @@
 #
 from pykwondo import *
 import matplotlib.pyplot as plt
+import params
 
 def init_background(arr):
     arr[:] = 1
@@ -85,28 +86,21 @@ def draw():
     plt.pause(5)
 
 comp = Comp()
-# Initialise figure and axis, mosaic subplot allows 1 plot on the left
-# and 2 plots on the right.
-#fig, ax = plt.subplot_mosaic([["arena","club_scores","individual_scores"],
-#                              ["arena","bro","individual_scores"]],
-#                             figsize=(19.2, 10.8),
-#                             width_ratios=[5,2,2],
-#                             gridspec_kw={"hspace": 0.3, "wspace": 0.3})
-
-fig = plt.figure(figsize=(14, 10), layout="constrained")
-gs = fig.add_gridspec(2, 3, width_ratios=[2,1,1]) # 2 rows 3 columns
-ax = {
-    "arena":                fig.add_subplot(gs[:, 0]), 
-    "club_scores":          fig.add_subplot(gs[0, 1]), 
-    "extra":                fig.add_subplot(gs[1, 1]),
-    "individual_scores":    fig.add_subplot(gs[:, 2])
-    }
-
-plt.rcParams.update({'axes.labelsize': 10, 'xtick.labelsize': 12,
-                     'ytick.labelsize': 8})
-
-zeros_arr = np.zeros((40, 60))
-floor = init_background(zeros_arr)
-
 comp.create_schedule()
-draw()
+
+if not params.headless:
+    fig = plt.figure(figsize=(14, 10), layout="constrained")
+    gs = fig.add_gridspec(2, 3, width_ratios=[2,1,1]) # 2 rows 3 columns
+    ax = {
+        "arena":                fig.add_subplot(gs[:, 0]), 
+        "club_scores":          fig.add_subplot(gs[0, 1]), 
+        "extra":                fig.add_subplot(gs[1, 1]),
+        "individual_scores":    fig.add_subplot(gs[:, 2])
+        }
+
+    plt.rcParams.update({'axes.labelsize': 10, 'xtick.labelsize': 12,
+                         'ytick.labelsize': 8})
+
+    zeros_arr = np.zeros((40, 60))
+    floor = init_background(zeros_arr)
+    draw()
