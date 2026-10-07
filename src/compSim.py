@@ -85,7 +85,7 @@ def draw():
     table.set_fontsize(6)
 
     # Pause the plot
-    plt.pause(5)
+    plt.pause(1)
 
 def input_validation(prompt, type=None, min=None, max=None):
     valid = False
@@ -116,15 +116,15 @@ if params.save_file is None:
                                    "create new file): ", min=0, 
                                    max=len(saves))
     if chosen_save == 0:
-        save_dir = (Path("saves") / 
-                    datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
-        save_dir.mkdir(parents=True, exist_ok=True)
+        save_dir = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        saves_dir = Path("saves/") / save_dir
+        saves_dir.mkdir(parents=True, exist_ok=True)
         print(f"Created save file: {save_dir}")
     else:
         save_dir = saves[chosen_save-1]
         print(f"Loaded save file: {save_dir}")
 
-comp = Comp()
+comp = Comp(save_dir=save_dir)
 comp.create_schedule()
 
 if not params.headless:
@@ -143,3 +143,5 @@ if not params.headless:
     zeros_arr = np.zeros((40, 60))
     floor = init_background(zeros_arr)
     draw()
+
+comp.save()

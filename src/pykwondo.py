@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import params
+import csv
 
 NAMES = ["Liam Carter", "Maya Patel", "Noah Kim", "Ava Rossi", 
          "Ethan Walsh", "Zoe Nguyen", "Lucas Silva", "Chloe Murphy", 
@@ -57,6 +58,14 @@ class Comp:
     def combine_competitors(self):
         return [competitor for club in self.clubs for 
                 competitor in club.get_competitors()]
+    
+    # Append simulation results to file
+    def save(self):
+        fields = ['first', 'second', 'third']       
+        with open(f'saves/{self.save_dir}/saves.csv', 'a') as save_file:
+            writer = csv.writer(save_file)
+            writer.writerow(fields)
+
 
 class Competitor:
     def __init__(self, name=None, rank=None, pos=(1,1), club_name=None):
