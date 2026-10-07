@@ -2,6 +2,7 @@ import random
 import numpy as np
 import params
 import csv
+from pathlib import Path
 
 NAMES = ["Liam Carter", "Maya Patel", "Noah Kim", "Ava Rossi", 
          "Ethan Walsh", "Zoe Nguyen", "Lucas Silva", "Chloe Murphy", 
@@ -13,7 +14,8 @@ NAMES = ["Liam Carter", "Maya Patel", "Noah Kim", "Ava Rossi",
          "Finn O'Brien", "Nina Petrov","Caleb Moore", "Yuki Tanaka", 
          "Ben Foster", "Amara Diallo", "Jake Wilson", "Elena Cruz", 
          "Ravi Menon", "Tess Walker", "Omar Said", "Lily Evans",]
-RANK_NAMES = ['white', 'yellow', 'green', 'blue', 'black']
+
+RANK_NAMES = ['white', 'yellow', 'orange', 'green', 'blue', 'purple', 'brown' 'black']
 CLUB_NAMES = ['Miyagi Do', 'Cobra Kai', 'Fighting Dragon', 'Eagle Fang']
 QUALIFYING = ['strike_challenge', 'kata', 'board_breaking', 'sparring']
 
@@ -37,6 +39,7 @@ class Comp:
         self.clubs = clubs or [Club(name) for name in CLUB_NAMES]
         self.events = []
         self.save_dir = save_dir
+        self.last_save = load_save(save_dir)
 
     def get_timestep(self):
         return self.timestep
@@ -61,15 +64,23 @@ class Comp:
     
     # Append simulation results to file
     def save(self):
-        fields = ['first', 'second', 'third']       
-        with open(f'saves/{self.save_dir}/saves.csv', 'a') as save_file:
-            writer = csv.writer(save_file)
-            writer.writerow(fields)
-
+        with open(f'saves/{self.save_dir}/save.csv', 'a') as save_file:
+            save_file.write(', '.join(str(c) for c in self.__get_save_list()))
+    # Gets list of competitor data to save to a file
+    def __get_save_list(self):
+        return [
+                [competitor.get_name(),
+                 club.get_name(),
+                 competitor.get_rank(),
+                 competitor.get_score()]
+            for club in self.clubs
+            for competitor in club.get_competitors()
+            ]
 
 class Competitor:
     def __init__(self, name=None, rank=None, pos=(1,1), club_name=None):
         self.name = name or random.choice(NAMES)
+        NAMES.remove(self.name)
         self.rank = rank or random.choice(RANK_NAMES)
         self.pos = pos
         self.score = random.randint(1, 10)

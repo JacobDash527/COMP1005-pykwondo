@@ -123,6 +123,8 @@ if params.save_file is None:
     else:
         save_dir = saves[chosen_save-1]
         print(f"Loaded save file: {save_dir}")
+else:
+    save_dir = params.save_file
 
 comp = Comp(save_dir=save_dir)
 comp.create_schedule()
