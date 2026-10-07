@@ -146,4 +146,5 @@ if not params.headless:
     floor = init_background(zeros_arr)
     draw()
 
-comp.save()
+#comp.save()
+#plt.savefig(f"saves/{save_dir}/{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}")

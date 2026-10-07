@@ -33,13 +33,32 @@ print(f"Seed: {seed}")
 
 
 class Comp:
-    def __init__(self, clubs=None, save_dir=None):
+    def __init__(self, save_dir=None):
         self.timestep = 0
         self.finals = False
-        self.clubs = clubs or [Club(name) for name in CLUB_NAMES]
+        self.clubs = []
         self.events = []
         self.save_dir = save_dir
-        self.last_save = load_save(save_dir)
+        self.last_save = None
+    
+        try:
+            self.last_save = self.__load()
+        except:
+            FileNotFoundError
+
+        self.save_list = [[x.strip().strip("'\"") for x in competitor.strip(" []").split(',')]for competitor in self.last_save.split("],")]
+        for competitor in self.save_list:
+            competitor[3] = int(competitor[3])
+        
+        for name in CLUB_NAMES:
+            competitors = []
+            for competitor in self.save_list:
+                if competitor[1] == name:
+                    competitors.append(Competitor(name=competitor[0], 
+                                                  club_name=competitor[1], 
+                                                  rank=competitor[2]))
+            self.clubs.append(Club(name=name, competitors=competitors))
+
 
     def get_timestep(self):
         return self.timestep
@@ -58,6 +77,7 @@ class Comp:
         self.events.append(BoardBreaking(competitor_list))
     
     # Combine all competitor lists
+
     def combine_competitors(self):
         return [competitor for club in self.clubs for 
                 competitor in club.get_competitors()]
@@ -65,7 +85,10 @@ class Comp:
     # Append simulation results to file
     def save(self):
         with open(f'saves/{self.save_dir}/save.csv', 'a') as save_file:
-            save_file.write(', '.join(str(c) for c in self.__get_save_list()))
+            #print(', '.join(str(i) for i in self.__get_save_list()))
+            #save_file.write(', '.join(str(i) for i in self.__get_save_list()) + '\n')
+            save_file.close()
+
     # Gets list of competitor data to save to a file
     def __get_save_list(self):
         return [
@@ -76,6 +99,13 @@ class Comp:
             for club in self.clubs
             for competitor in club.get_competitors()
             ]
+
+    # Load file
+    def __load(self):
+        with open(f'saves/{self.save_dir}/save.csv', 'r') as save_file:
+            data = save_file.readlines()[-1].strip()
+            save_file.close()
+            return data
 
 class Competitor:
     def __init__(self, name=None, rank=None, pos=(1,1), club_name=None):
@@ -112,9 +142,9 @@ class Competitor:
 
 
 class Club:
-    def __init__(self, name=None):
+    def __init__(self, name=None, competitors=None):
         self.name = name or random.choice(CLUB_NAMES)
-        self.competitors = [Competitor(club_name=self.name) for i in range(10)]
+        self.competitors = competitors or [Competitor(club_name=self.name) for i in range(10)]
         self.score = random.randint(1,10)
 
     def get_name(self):

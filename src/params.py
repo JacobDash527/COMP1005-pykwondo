@@ -1,3 +1,3 @@
 random_seed = None
-headless = True
+headless = False
 save_file = 'test_save'
