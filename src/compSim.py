@@ -7,8 +7,25 @@ import params
 from datetime import datetime
 from pathlib import Path
 
-def init_background(arr):
-    arr[:] = 1
+def save_plot(save_name):
+    fig = plt.Figure()
+    ax = fig.subplots()
+    ax.set_title("Kata Accuracy")
+    ax.set_ylabel("Accuracy %")
+    ax.set_xlabel('Steps')
+    for i, club in enumerate(comp.get_clubs()):
+        cmap = plt.get_cmap("Pastel1")
+        color = cmap(i)
+        ax.plot(club.accuracy, label=f"{club.get_name()}", color=color)
+        ax.legend()
+    fig.savefig(SAVES_DIR / save_name / f"kata_accuracy-{
+                datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.png")
+
+def init_background():
+    """
+    init_background - initialises the floor array to be displayed using imshow 
+    """
+    arr = np.ones((40, 60))
 
     # Initialise each club area
     for club in comp.get_clubs():
@@ -21,6 +38,10 @@ def init_background(arr):
     return arr
 
 def draw():
+    """
+    draw - handles all plots separately from the simulation code, calls 
+           accessor methods in pywkwondo.py
+    """
     for axis in ax.values(): 
         axis.clear()
 
@@ -42,8 +63,12 @@ def draw():
         for competitor in club.get_competitors():
             j = club.get_competitors().index(competitor)
             pos = competitor.get_pos()
-            axis.scatter(pos[0]+j*1.5, pos[1]+5+10*i, 
-                          color=competitor.get_rank())
+            if competitor.in_event:
+                axis.scatter(pos[0], pos[1], color=competitor.get_rank())
+                axis.annotate(f"{competitor.strike}", 
+                              xy=(pos[0]-1, pos[1]-1), fontsize=6)
+            else:
+                axis.scatter(1+j*1.5, 1+5+10*i, color=competitor.get_rank())
 
     # Arena event type label
     axis.annotate(f"Event", xy=(21,1))
@@ -70,7 +95,8 @@ def draw():
     
     # List of competitors sorted by score
     competitors = sorted(comp.combine_competitors(), 
-                         key=lambda competitor: competitor.get_score())
+                         key=lambda competitor: competitor.get_score(),
+                         reverse=True)
     rows = range(1, len(competitors))
     columns = ['Rank', 'Name', 'Club', 'Score', 'Belt']
     cell_text = [[i+1, competitor.get_name().replace(" ","\n"), 
@@ -84,10 +110,42 @@ def draw():
     table.auto_set_font_size(False)
     table.set_fontsize(6)
 
+#Accuracy score graph
+    if comp.get_event() is not None:
+        match comp.get_event().get_event_type():
+            case "kata":
+                axis = ax['extra']
+                axis.set_title("Kata accuracy")
+                axis.set_ylabel("Accuracy %")
+                axis.set_xlabel('Steps')
+        
+                for i, club in enumerate(comp.get_clubs()):
+                    cmap = plt.get_cmap("Pastel1")
+                    color = cmap(i)
+                    axis.plot(club.accuracy, label=f"{club.get_name()}", 
+                              color=color)
+                low, high = axis.get_ylim()
+                axis.set_ylim(low-0.1, top=1.3)
+                axis.legend(fontsize='small', loc='upper left') 
+        axis.plot()
+
     # Pause the plot
-    plt.pause(1)
+    plt.pause(0.1)
+
+
 
 def input_validation(prompt, type=None, min=None, max=None):
+    """
+    input_validation - improves code readability and conciceness by reducing
+                       all instances of exception handling to a single
+                       function
+
+    prompt - command line promp (string)
+    type - type of exception (exception)
+    min - minimum value (int | float)
+    max - maximum value (int | float)
+
+    """
     valid = False
     while not valid:
         match type:
@@ -102,7 +160,7 @@ def input_validation(prompt, type=None, min=None, max=None):
                     print(f"Invalid input: {error}")
     return value
                 
-save_dir = None
+save_name = None
 # Create a save directory with the current date and time 
 # Format: YYYY-MM-DD_HH-MM-SS
 if params.save_file is None:
@@ -116,35 +174,38 @@ if params.save_file is None:
                                    "create new file): ", min=0, 
                                    max=len(saves))
     if chosen_save == 0:
-        save_dir = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        saves_dir = Path("saves/") / save_dir
-        saves_dir.mkdir(parents=True, exist_ok=True)
+        save_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        saves_name = Path("saves/") / save_dir
+        saves_name.mkdir(parents=True, exist_ok=True)
         print(f"Created save file: {save_dir}")
     else:
-        save_dir = saves[chosen_save-1]
+        save_name = saves[chosen_save-1]
         print(f"Loaded save file: {save_dir}")
 else:
-    save_dir = params.save_file
+    save_name = params.save_file
 
-comp = Comp(save_dir=save_dir)
+comp = Comp(save_name)
 comp.create_schedule()
+fig = plt.figure(figsize=(14, 10), layout="constrained")
+gs = fig.add_gridspec(2, 3, width_ratios=[2,1,1]) # 2 rows 3 columns
+ax = {
+    "arena":                fig.add_subplot(gs[:, 0]), 
+    "club_scores":          fig.add_subplot(gs[0, 1]), 
+    "extra":                fig.add_subplot(gs[1, 1]),
+    "individual_scores":    fig.add_subplot(gs[:, 2])
+    }
 
-if not params.headless:
-    fig = plt.figure(figsize=(14, 10), layout="constrained")
-    gs = fig.add_gridspec(2, 3, width_ratios=[2,1,1]) # 2 rows 3 columns
-    ax = {
-        "arena":                fig.add_subplot(gs[:, 0]), 
-        "club_scores":          fig.add_subplot(gs[0, 1]), 
-        "extra":                fig.add_subplot(gs[1, 1]),
-        "individual_scores":    fig.add_subplot(gs[:, 2])
-        }
+plt.rcParams.update({'axes.labelsize': 10, 'xtick.labelsize': 12,
+                     'ytick.labelsize': 8})
 
-    plt.rcParams.update({'axes.labelsize': 10, 'xtick.labelsize': 12,
-                         'ytick.labelsize': 8})
+floor = init_background()
 
-    zeros_arr = np.zeros((40, 60))
-    floor = init_background(zeros_arr)
-    draw()
+for step in range(params.num_steps):
+    if not params.headless:
+        draw()
+    comp.step()
+
+save_plot(save_name)
 
 #comp.save()
 #plt.savefig(f"saves/{save_dir}/{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}")
