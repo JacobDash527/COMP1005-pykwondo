@@ -141,6 +141,8 @@ class Comp:
                 else:
                     print(f"{self.event.get_event_type().capitalize()} will "
                           f"begin in {3-self.event.get_timestep()}")
+            if self.event.complete:
+                self.event = None
             self.event.step()
 
         for club in self.clubs:
@@ -153,7 +155,7 @@ class Comp:
         """Returns a generated event schedule list."""
         competitor_list = self.combine_competitors()
         # Initialise each event
-        #self.events.append(StrikeChallenge(competitor_list))
+        self.events.append(StrikeChallenge(competitor_list))
         self.events.append(Kata(competitor_list))
         #self.events.append(BoardBreaking(competitor_list))
     
@@ -303,6 +305,14 @@ class Event:
         self.complete = False
         self.started = False
         self.timestep = 0
+
+        self.STRIKES = ['punch', 'kick', 'chop', 'block']
+        self.MOVE_TUPLES = {
+                'f':    (0, -0.5),
+                'b':    (0, 0.5),
+                'l':    (-0.5, 0),
+                'r':    (0.5, 0),
+                }
     
     def get_event_type(self):
         return self.event_type
@@ -313,25 +323,30 @@ class Event:
 class StrikeChallenge(Event):
     def __init__(self, competitors):
         super().__init__('strike_challenge', competitors)
+        self.moves = ['kick', 'punch', 'chop' 'punch', 'kick', 'kick', 
+                      'chop', 'punch', 'punch']
 
     def begin(self):
         self.started = True
+        i = 0
+        j = 0
+        for competitor in self.competitors:
+            competitor.in_event = True
+            competitor.update_pos((23+i*5, 5+j*6))
+            i += 1
+            if i > 6:
+                i=0
+                j += 1
 
     def step(self):
         if self.timestep > 5:
             self.complete = True
+            for competitor in self.competitors: competitor.in_event = False
         self.timestep += 1
 
 class Kata(Event):
     def __init__(self, competitors):
         super().__init__('kata', competitors)
-        self.MOVE_TUPLES = {
-                'f':    (0, -0.5),
-                'b':    (0, 0.5),
-                'l':    (-0.5, 0),
-                'r':    (0.5, 0),
-                }
-        self.STRIKES = ['punch', 'kick', 'chop', 'block']
         self.moves = ['f', 'b', 'l', 'kick', 'f', 'punch', 'l', 'r', 'block',
                       'r', 'b', 'kick', 'f', 'b', 'l', 'chop']
 

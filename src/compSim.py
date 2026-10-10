@@ -3,6 +3,7 @@
 #
 from pykwondo import *
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import params
 from datetime import datetime
 from pathlib import Path
@@ -63,15 +64,21 @@ def draw():
         for competitor in club.get_competitors():
             j = club.get_competitors().index(competitor)
             pos = competitor.get_pos()
-            if competitor.in_event:
+
+            if comp.get_event() is not None and competitor.in_event:
+                if comp.get_event().get_event_type() == "strike_challenge":
+                    rect = patches.Rectangle((pos[0]+1, pos[1]-1), 1, 2,
+                                             linewidth=1, facecolor='black')
+                    axis.add_patch(rect)
                 axis.scatter(pos[0], pos[1], color=competitor.get_rank())
                 axis.annotate(f"{competitor.strike}", 
-                              xy=(pos[0]-1, pos[1]-1), fontsize=6)
+                                xy=(pos[0]-1, pos[1]-1), fontsize=6)
             else:
                 axis.scatter(1+j*1.5, 1+5+10*i, color=competitor.get_rank())
 
-    # Arena event type label
-    axis.annotate(f"Event", xy=(21,1))
+    # Arena event label
+    if comp.get_event() is not None:
+        axis.annotate(f"{comp.get_event().get_event_type()}", xy=(21,1))
     
 # Team score graph
     axis = ax["club_scores"]
