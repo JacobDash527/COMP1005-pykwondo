@@ -80,10 +80,12 @@ class Comp:
         Calls __get_save_list() and appends the simulation results as a string 
         to the end of the save csv.
     __get_save_list()
-        Returns a nested list containing each competitor, and their attributes 
+        Returns a nested list containing each competitor, and their
+        attributes 
         [[name (str), club_name (str), rank (str), score (int)]].
     __load(save_name)
-        Open the save csv in the selected save file (string) and reads the last
+        Open the save csv in the selected save file (string) and 
+        reads the last
         appended line. Returns the line as a usable list.
     """
     def __init__(self, save_name=None):
@@ -197,7 +199,7 @@ class Comp:
         ----------
         save_name : string
             Passes the save file name.
-
+        
         Returns
         ----------
         data_list : list
@@ -213,6 +215,67 @@ class Comp:
             return data_list
 
 class Competitor:
+    """Class used to represent competitors 
+    
+    Contains methods to handle position, movement, score and ranking.
+    
+    Parameters
+    ----------
+    name : string
+        Passes the name of the competitor.
+    rank : string
+        Passes the rank of the competitor.
+    pos : tuple
+        Passes intial position of the competitor.
+    club_name : string 
+        Passes the name of the club.
+    
+    Attributes
+    ----------
+    name : string
+        The name of the competitor.
+    rank : string
+        The rank of the competitor.
+    pos : tuple
+        The position of the competitor in the arena (x,y)).
+    score : integer
+        The current score of the competitor.
+    prev_score : integer
+        The previous score of the competitor.
+    accuracy : float
+        The accuracy of the competitor in %.
+    club_name : string
+        The name of the club in which the competitor belongs to.
+    in_event : boolean
+        Is the comoetitor in an event (True) or their team area (False).
+    strike : string
+        The current strike action of the competitor.
+    
+    Methods
+    -------
+    get_name()
+        Returns the name of the competitor as a string.
+    get_rank()
+        Returns the rank of the competitor as a string.
+    get_pos()
+        Returns the position of the competitor as a tuple (x,y).
+    get_score()
+        Returns the score of the competitor as an integer.
+    get_prev_score()
+        Returns the previous score as an integer..
+    get_club_name()
+        Returns the name of the club the competitor is associated with
+        as a string.
+    update_pos(pos)
+        Updates the competitors position tuple
+    update_score(score)
+        Adds points to the competitors score and sets previous score
+    move(dx, dy)
+        Updates the competitors position tuple with change in x and y position
+    __rank_up()
+        Called when the competitor reaches the threshold score to rank up if
+        competitors belt is < black.
+    """
     def __init__(self, name=None, rank=None, pos=(1,1), club_name=None):
         self.name = name or random.choice(NAMES)
         NAMES.remove(self.name)
@@ -232,37 +295,66 @@ class Competitor:
     
     # Return competitor rank
     def get_name(self):
+        """Returns the name of the competitor as a string."""
         return self.name
 
     def get_rank(self):
+        """Returns the rank of the competitor as a string."""
         return self.rank
 
     def get_pos(self):
+        """Returns the position of the competitor as a tuple."""
         return self.pos
 
     def get_score(self):
+        """Returns the score of the competitor as an integer."""
         return self.score
 
     def get_prev_score(self):
+        """Returns the previous score of the competitor as an integer."""
         return self.prev_score
 
     def get_club_name(self):
+        """Returns the name of the club the competitor is associated with."""
         return self.club_name
 
     def update_pos(self, pos):
+        """Updates competitor position tuple.
+        
+        Parameters
+        ----------
+        pos : tuple
+           Position to set competitor to.
+        """
         self.pos = pos
 
     def update_score(self, score):
+        """Updates the competitors score and calls rank_up() if the score 
+        meets the rank up threshold.
+        
+        Parameters
+        ----------
+        score : integer
+            The number of points to be added to the competitors score.
+        """
         self.prev_score = self.score
         self.score += score
 
         if self.score // 20 > self.prev_score // 20:
-            self.rank_up()
+            self.__rank_up()
 
     def move(self, dx, dy):
+        """Updates the competitors position tuple by adding change in x and y.
+        Parameters
+        ----------
+        dx : float
+            Change in x.
+        dy : float
+            Change in y.
+        """
         self.pos = (self.pos[0] + dx, self.pos[1] + dy)
 
-    def rank_up(self):
+    def __rank_up(self):
         if self.rank != 'black':
             self.rank = RANK_NAMES[RANK_NAMES.index(self.rank)+1]
             print(f"{self.name} ranked up to {self.rank}")
